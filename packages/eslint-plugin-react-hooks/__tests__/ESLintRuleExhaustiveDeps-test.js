@@ -1087,6 +1087,83 @@ const tests = {
       ],
     },
     {
+      // Inject dependencies onto hooks that need them
+      code: `
+        function MyComponent(props) {
+          let foo = 42;
+          const value = useMemo(() => {
+            console.log(foo);
+          });
+        }
+      `,
+      output: `
+        function MyComponent(props) {
+          let foo = 42;
+          const value = useMemo(() => {
+            console.log(foo);
+          }, [foo]);
+        }
+      `,
+      errors: [
+        'React Hook useMemo does nothing when called with only one argument. ' +
+          'Did you forget to pass an array of dependencies?',
+        "React Hook useMemo has a missing dependency: 'foo'. " +
+          'Did you mean to include it?',
+      ],
+      options: [{injectDependencies: true}],
+    },
+    {
+      // Don't inject dependencies if no options specified
+      code: `
+        function MyComponent(props) {
+          let foo = 42;
+          const value = useMemo(() => {
+            console.log(foo);
+          });
+        }
+      `,
+      output: `
+        function MyComponent(props) {
+          let foo = 42;
+          const value = useMemo(() => {
+            console.log(foo);
+          });
+        }
+      `,
+      errors: [
+        'React Hook useMemo does nothing when called with only one argument. ' +
+          'Did you forget to pass an array of dependencies?',
+        "React Hook useMemo has a missing dependency: 'foo'. " +
+          'Did you mean to include it?',
+      ],
+    },
+    {
+      // Don't inject dependencies if option is explicitly false
+      code: `
+        function MyComponent(props) {
+          let foo = 42;
+          const value = useMemo(() => {
+            console.log(foo);
+          });
+        }
+      `,
+      output: `
+        function MyComponent(props) {
+          let foo = 42;
+          const value = useMemo(() => {
+            console.log(foo);
+          });
+        }
+      `,
+      errors: [
+        'React Hook useMemo does nothing when called with only one argument. ' +
+          'Did you forget to pass an array of dependencies?',
+        "React Hook useMemo has a missing dependency: 'foo'. " +
+          'Did you mean to include it?',
+      ],
+      options: [{injectDependencies: false}],
+    },
+    {
       // Regression test
       code: `
         function MyComponent() {
