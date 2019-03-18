@@ -633,6 +633,19 @@ describe('ReactLazy', () => {
     );
   });
 
+  it('sets propTypes on the outer wrapper but warns', () => {
+    const LazyText = lazy(() => fakeImport(Text));
+    expect(() => {
+      LazyText.propTypes = {text: PropTypes.string};
+    }).toWarnDev(
+      'React.lazy(...): It is not supported to assign `propTypes` to ' +
+        'a lazy component import. Either specify them where the component ' +
+        'is defined, or create a wrapping component around it.',
+      {withoutStack: true},
+    );
+    expect(LazyText.propTypes).toEqual({text: PropTypes.string});
+  });
+
   async function verifyInnerPropTypesAreChecked(Add) {
     const LazyAdd = lazy(() => fakeImport(Add));
     expect(() => {
